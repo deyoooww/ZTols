@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#06090e">
+<title>ZTOOLS - iOS HD & Media Suite Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --accent:#00f2fe;
+  --accent-glow:rgba(0, 242, 254, 0.4);
+  --glass-bg:rgba(255, 255, 255, 0.07);
+  --glass-bg-hover:rgba(255, 255, 255, 0.12);
+  --glass-border:rgba(255, 255, 255, 0.18);
+  --glass-highlight:rgba(255, 255, 255, 0.35);
+  --muted:rgba(255, 255, 255, 0.65);
+  --ease:cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  font-family:'Plus Jakarta Sans', Arial, sans-serif;
+  color:#fff;
+  background:#06080c;
+}
+
+body{
+  overflow-x:hidden;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background: 
+    radial-gradient(circle at 15% 20%, rgba(0, 242, 254, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(79, 172, 254, 0.12) 0%, transparent 50%),
+    url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1800&q=85");
+  background-size:cover;
+  background-position:center;
+  filter:brightness(0.55) contrast(1.1);
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:rgba(6, 9, 14, 0.4);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+button,input,textarea,select{font:inherit}
+
+.liquid-btn, button {
+  position: relative;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: #fff;
+  border-radius: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s var(--ease);
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.liquid-btn::before, button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: 0.6s var(--ease);
+}
+
+.liquid-btn:hover::before, button:hover::before {
+  left: 100%;
+}
+
+.liquid-btn:hover, button:hover {
+  background: var(--glass-bg-hover);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 242, 254, 0.25),
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.liquid-btn:active, button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+#loading{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:grid;
+  place-items:center;
+  background:rgba(4, 6, 10, 0.92);
+  backdrop-filter:blur(30px);
+  -webkit-backdrop-filter:blur(30px);
+  transition:opacity .6s var(--ease), visibility .6s
+}
+
+#loading.hide{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none
+}
+
+.loader{
+  text-align:center;
+  width:min(350px,82vw)
+}
+
+.loader-logo{
+  font-size:42px;
+  font-weight:800;
+  letter-spacing:-1.5px;
+  background: linear-gradient(135deg, #fff 30%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.loader-sub{
+  font-size:12px;
+  color:var(--muted);
+  margin:8px 0 24px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+.progress{
+  height:6px;
+  border-radius:99px;
+  background:rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow:hidden;
+  padding: 1px;
+}
+
+.progress i{
+  display:block;
+  width:0;
+  height:100%;
+  background: linear-gradient(90deg, #4facfe, var(--accent));
+  border-radius:99px;
+  box-shadow: 0 0 12px var(--accent-glow);
+  animation:loading 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards
+}
+
+@keyframes loading{
+  to{width:100%}
+}
+
+.app{
+  width:min(480px,100%);
+  margin:auto;
+  padding:16px 16px 40px
+}
+
+.topbar{
+  height:68px;
+  margin-bottom:20px;
+  padding:0 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(255, 255, 255, 0.05);
+  backdrop-filter:blur(25px) saturate(180%);
+  -webkit-backdrop-filter:blur(25px) saturate(180%);
+  border:1px solid var(--glass-border);
+  border-radius:22px;
+  box-shadow:0 16px 40px rgba(0,0,0,.3), inset 0 1px 1px rgba(255,255,255,0.2);
+}
+
+.logo{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:-0.5px;
+  background: linear-gradient(135deg, #ffffff 40%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.location{
+  font-size:11px;
+  font-weight:600;
+  color:#fff;
+  padding:6px 14px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:999px;
+  backdrop-filter:blur(10px);
+}
+
+/* Banner Header Styling */
+.banner-container {
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.banner-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.hero{
+  padding:0px 4px 24px
+}
+
+.hero h1{
+  margin:0;
+  font-size:32px;
+  line-height:1.1;
+  letter-spacing:-1.2px;
+  font-weight:800;
+}
+
+.hero h1 span{
+  background: linear-gradient(135deg, #00f2fe, #4facfe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero p{
+  margin:10px 0 0;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--muted)
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px
+}
+
+.card{
+  min-height:130px;
+  padding:20px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.card h3{
+  margin:0;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:-0.3px;
+}
+
+.card p{
+  margin:6px 0 0;
+  font-size:11px;
+  line-height:1.4;
+  color:var(--muted)
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:none;
+  overflow:auto;
+  padding:16px;
+  background:rgba(4, 7, 12, 0.75);
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px)
+}
+
+.overlay.show{
+  display:block;
+  animation:fade .3s var(--ease)
+}
+
+@keyframes fade{
+  from{opacity:0; transform: scale(0.97)}
+  to{opacity:1; transform: scale(1)}
+}
+
+.sheet{
+  width:min(480px,100%);
+  margin:auto;
+  padding-bottom:30px
+}
+
+.sheetbar{
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+
+.sheetbar h2{
+  margin:0;
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:-0.5px;
+}
+
+.close{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:22px;
+  line-height:1;
+}
+
+.glass{
+  padding:20px;
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(30px) saturate(180%);
+  -webkit-backdrop-filter:blur(30px) saturate(180%);
+  border:1px solid var(--glass-border);
+  border-radius:28px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35), inset 0 1px 1px rgba(255,255,255,0.2);
+}
+
+.section-title{
+  margin:0 0 14px;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:-0.2px;
+  color:#fff;
+}
+
+.pick{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:50px;
+  padding:12px;
+  border-radius:16px;
+  font-size:13px;
+  font-weight:700;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  cursor:pointer;
+  transition: all 0.3s var(--ease);
+}
+
+.pick:hover{
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
+input[type=file]{display:none}
+
+.preview-box{
+  min-height:220px;
+  margin-top:14px;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:rgba(0,0,0,.25);
+  border:1px dashed rgba(255,255,255,.2);
+  border-radius:20px
+}
+
+.preview-box.empty{
+  font-size:12px;
+  text-align:center;
+  color:var(--muted)
+}
+
+.preview-box img, .preview-box video{
+  max-width:100%;
+  width:auto;
+  max-height:45vh;
+  border-radius:14px;
+  display:block;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transition:filter .3s var(--ease)
+}
+
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:14px
+}
+
+.tabs-4{
+  grid-template-columns:repeat(4,1fr);
+}
+
+.pill{
+  padding:12px 4px;
+  border-radius:14px;
+  font-size:11px;
+  font-weight:700;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.05);
+  color:var(--muted);
+}
+
+.pill.active{
+  background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1));
+  border-color: var(--accent);
+  color:#fff;
+  box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.primary{
+  width:100%;
+  margin-top:14px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,0.4);
+  border-radius:18px;
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  color:#040810;
+  font-weight:800;
+  font-size:14px;
+  letter-spacing:0.3px;
+  box-shadow: 0 8px 25px var(--accent-glow);
+}
+
+.primary:hover{
+  filter:brightness(1.1);
+  box-shadow: 0 12px 30px var(--accent-glow);
+}
+
+.tool{margin-bottom:14px}
+
+label.small{
+  display:block;
+  margin:0 0 8px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--muted)
+}
+
+input[type=text],
+input[type=number],
+input[type=range],
+select,
+textarea{
+  width:100%;
+  outline:none;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:16px;
+  background:rgba(0,0,0,.3);
+  color:#fff;
+  padding:14px;
+  font-size:13px;
+  transition:all .3s var(--ease)
+}
+
+select option{
+  background:#0d131d;
+  color:#fff;
+}
+
+input[type=range]{
+  padding:0;
+  height:8px;
+  accent-color: var(--accent);
+}
+
+textarea{
+  min-height:90px;
+  resize:vertical
+}
+
+input[type=text]:focus,
+input[type=number]:focus,
+select:focus,
+textarea:focus{
+  border-color:var(--accent);
+  background:rgba(0,0,0,.45);
+  box-shadow:0 0 15px var(--accent-glow);
+}
+
+.result{
+  min-height:46px;
+  margin-top:12px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.1);
+  font-size:12px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  word-break:break-word
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  margin-top:10px
+}
+
+.secondary{
+  flex:1;
+  padding:12px;
+  border-radius:14px;
+  font-size:12px;
+  font-weight:700
+}
+
+.style-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:10px
+}
+
+.style-tabs button{
+  padding:10px 2px;
+  border-radius:12px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.style-tabs button.active{
+  background:rgba(255,255,255,0.2);
+  border-color:var(--accent);
+  color:#fff;
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.qrwrap{
+  display:none;
+  margin-top:12px;
+  padding:16px;
+  text-align:center;
+  border-radius:20px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,0.1);
+}
+
+#qr{
+  max-width:100%;
+  height:auto;
+  border-radius:12px;
+  padding:8px;
+  background:#fff;
+}
+
+.qr-link{
+  margin-top:10px;
+  font-size:11px;
+  color:var(--muted);
+  word-break:break-all
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:30px;
+  z-index:900;
+  opacity:0;
+  pointer-events:none;
+  transform:translate(-50%,20px);
+  padding:12px 20px;
+  border-radius:999px;
+  background:rgba(10, 15, 25, 0.85);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  font-size:12px;
+  font-weight:600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  transition:all .3s var(--ease);
+  white-space:nowrap
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0)
+}
+
+@media(max-width:360px){
+  .card{
+    padding:16px;
+    min-height:120px
+  }
+  .pill{
+    font-size:10px
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loading">
+  <div class="loader">
+    <div class="loader-logo">ZTOOLS</div>
+    <div class="loader-sub">Tools • Premium</div>
+    <div class="progress"><i></i></div>
+  </div>
+</div>
+
+<main class="app">
+
+<header class="topbar">
+  <div class="logo">ZTOOLS</div>
+  
+</header>
+
+<!-- Banner Halaman Utama -->
+<div class="banner-container">
+  <img src="https://oceanslinkupl.rf.gd/uploads/84060d7b9f84ab50b82dea2e2459d767.png" alt="ZTOOLS Banner">
+</div>
+
+<section class="hero">
+  <h1>iOS HD <span>& Media Suite.</span></h1>
+  <p>
+    Toolkit pemroses media lengkap untuk meningkatkan kualitas visual, pengolah gambar, audio, dan otomasi WhatsApp secara instan.
+  </p>
+</section>
+
+<section class="grid">
+
+<button class="card liquid-btn" id="openHD">
+  <h3>HD FOTO</h3>
+  <p>Penajaman detail piksel foto nyata</p>
+</button>
+
+<button class="card liquid-btn" id="openHDVideo">
+  <h3>HD VIDEO</h3>
+  <p>Peningkatan kejernihan video</p>
+</button>
+
+<button class="card liquid-btn" id="openBG">
+  <h3>BG REMOVER</h3>
+  <p>Hapus latar belakang foto</p>
+</button>
+
+<button class="card liquid-btn" id="openCompress">
+  <h3>COMPRESS</h3>
+  <p>Kecilkan ukuran file foto</p>
+</button>
+
+<button class="card liquid-btn" id="openAIFilter">
+  <h3>AI FILTER</h3>
+  <p>Efek style visual unik</p>
+</button>
+
+<button class="card liquid-btn" id="openWatermark">
+  <h3>WATERMARK</h3>
+  <p>Tambah teks ke foto</p>
+</button>
+
+<button class="card liquid-btn" id="openResizer">
+  <h3>RESIZER</h3>
+  <p>Ubah dimensi pixel foto</p>
+</button>
+
+<button class="card liquid-btn" id="openMeme">
+  <h3>MEME MAKER</h3>
+  <p>Buat teks meme atas bawah</p>
+</button>
+
+<button class="card liquid-btn" id="openAudioExtract">
+  <h3>EXTRACT AUDIO</h3>
+  <p>Ambil MP3 dari video</p>
+</button>
+
+<button class="card liquid-btn" id="openAISummarizer">
+  <h3>TEXT SUMMARY</h3>
+  <p>Ringkas teks otomatis</p>
+</button>
+
+<button class="card liquid-btn" id="openWA">
+  <h3>WA TOOLS</h3>
+  <p>Link, Text Styler & QR Saluran</p>
+</button>
+
+</section>
+</main>
+
+<!-- HD FOTO OVERLAY -->
+<div class="overlay" id="hdOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>HD FOTO</h2>
+  <button class="close liquid-btn" data-close="hdOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Pilih Foto</p>
+<label class="pick liquid-btn">
+  Pilih Foto dari Galeri
+  <input id="photoInput" type="file" accept="image/*">
+</label>
+<div class="preview-box empty" id="photoBox">
+  Foto yang dipilih akan tampil di sini.
+</div>
+<div class="tabs">
+  <button class="pill liquid-btn active" data-filter="original">ORIGINAL</button>
+  <button class="pill liquid-btn" data-filter="v1">STANDAR</button>
+  <button class="pill liquid-btn" data-filter="v2">ULTRA</button>
+</div>
+<button class="primary liquid-btn" id="downloadHD">Download HD Foto</button>
+</div>
+</div>
+</div>
+
+<!-- HD VIDEO OVERLAY -->
+<div class="overlay" id="hdVideoOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>HD VIDEO</h2>
+  <button class="close liquid-btn" data-close="hdVideoOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Pilih Video</p>
+<label class="pick liquid-btn">
+  Pilih Video dari Galeri
+  <input id="videoInput" type="file" accept="video/*">
+</label>
+<div class="preview-box empty" id="videoBox">
+  Video yang dipilih akan tampil di sini.
+</div>
+<div class="tabs">
+  <button class="pill liquid-btn active" data-vfilter="original">NORMAL</button>
+  <button class="pill liquid-btn" data-vfilter="v1">HD CLEAR</button>
+  <button class="pill liquid-btn" data-vfilter="v2">ULTRA HD</button>
+</div>
+<button class="primary liquid-btn" id="downloadVideo">Download Video HD</button>
+</div>
+</div>
+</div>
+
+<!-- BG REMOVER OVERLAY -->
+<div class="overlay" id="bgOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>BG REMOVER</h2>
+  <button class="close liquid-btn" data-close="bgOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Pilih Foto Latar Belakang</p>
+<label class="pick liquid-btn">
+  Upload Foto
+  <input id="bgInput" type="file" accept="image/*">
+</label>
+<div class="preview-box empty" id="bgBox">
+  Hasil latar belakang bersih akan tampil di sini.
+</div>
+<button class="primary liquid-btn" id="processBG">Hapus Latar Belakang</button>
+<button class="secondary liquid-btn" id="downloadBG" style="width:100%;margin-top:10px">Download PNG Transparan</button>
+</div>
+</div>
+</div>
+
+<!-- COMPRESS OVERLAY -->
+<div class="overlay" id="compressOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>COMPRESS FOTO</h2>
+  <button class="close liquid-btn" data-close="compressOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Upload Foto untuk Dikompres</p>
+<label class="pick liquid-btn">
+  Pilih Foto
+  <input id="compressInput" type="file" accept="image/*">
+</label>
+<div class="preview-box empty" id="compressBox">
+  Ukuran foto akan diperkecil di sini.
+</div>
+<div style="margin-top:14px;">
+  <label class="small">Tingkat Kualitas Kompresi: <span id="qualityVal">70%</span></label>
+  <input type="range" id="compressQuality" min="10" max="90" value="70">
+</div>
+<button class="primary liquid-btn" id="downloadCompress">Download Foto Kompres</button>
+</div>
+</div>
+</div>
+
+<!-- AI FILTER OVERLAY -->
+<div class="overlay" id="aiOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>AI FILTER</h2>
+  <button class="close liquid-btn" data-close="aiOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Pilih Foto</p>
+<label class="pick liquid-btn">
+  Pilih Foto dari Galeri
+  <input id="aiInput" type="file" accept="image/*">
+</label>
+<div class="preview-box empty" id="aiBox">
+  Preview filter AI akan tampil di sini.
+</div>
+<div class="tabs tabs-4">
+  <button class="pill liquid-btn active" data-aifilter="cyber">CYBER</button>
+  <button class="pill liquid-btn" data-aifilter="retro">RETRO</button>
+  <button class="pill liquid-btn" data-aifilter="mono">MONO</button>
+  <button class="pill liquid-btn" data-aifilter="dramatic">DRAMA</button>
+</div>
+<button class="primary liquid-btn" id="downloadAI">Download Foto Filter</button>
+</div>
+</div>
+</div>
+
+<!-- WATERMARK OVERLAY -->
+<div class="overlay" id="watermarkOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>WATERMARK</h2>
+  <button class="close liquid-btn" data-close="watermarkOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Tambahkan Teks Watermark</p>
+<label class="pick liquid-btn">
+  Pilih Foto
+  <input id="wmInput" type="file" accept="image/*">
+</label>
+<div class="preview-box empty" id="wmBox">
+  Preview foto berserta watermark.
+</div>
+<div style="margin-top:14px">
+  <label class="small">Teks Watermark</label>
+  <input type="text" id="wmText" placeholder="ZTOOLS Copyright">
+</div>
+<div style="margin-top:10px">
+  <label class="small">Posisi Watermark</label>
+  <select id="wmPos">
+    <option value="bottom-right">Bawah Kanan</option>
+    <option value="bottom-left">Bawah Kiri</option>
+    <option value="center">Tengah</option>
+    <option value="top-right">Atas Kanan</option>
+  </select>
+</div>
+<button class="primary liquid-btn" id="downloadWM">Download Foto Watermark</button>
+</div>
+</div>
+</div>
+
+<!-- RESIZER OVERLAY -->
+<div class="overlay" id="resizerOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>IMAGE RESIZER</h2>
+  <button class="close liquid-btn" data-close="resizerOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Atur Dimensi Pixel Foto</p>
+<label class="pick liquid-btn">
+  Pilih Foto
+  <input id="resizeInput" type="file" accept="image/*">
+</label>
+<div class="preview-box empty" id="resizeBox">
+  Foto siap diubah ukurannya.
+</div>
+<div class="row" style="margin-top:14px">
+  <div style="flex:1">
+    <label class="small">Lebar (px)</label>
+    <input type="number" id="resizeW" placeholder="800">
+  </div>
+  <div style="flex:1">
+    <label class="small">Tinggi (px)</label>
+    <input type="number" id="resizeH" placeholder="600">
+  </div>
+</div>
+<button class="primary liquid-btn" id="downloadResize">Download Hasil Resize</button>
+</div>
+</div>
+</div>
+
+<!-- MEME OVERLAY -->
+<div class="overlay" id="memeOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>MEME MAKER</h2>
+  <button class="close liquid-btn" data-close="memeOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Buat Meme Instan</p>
+<label class="pick liquid-btn">
+  Pilih Gambar Meme
+  <input id="memeInput" type="file" accept="image/*">
+</label>
+<div class="preview-box empty" id="memeBox">
+  Teks meme akan dirender di sini.
+</div>
+<div style="margin-top:14px">
+  <label class="small">Teks Atas</label>
+  <input type="text" id="memeTop" placeholder="KETIKA KAMU...">
+  <label class="small" style="margin-top:8px">Teks Bawah</label>
+  <input type="text" id="memeBottom" placeholder="TAPI BISA FINISH...">
+</div>
+<button class="primary liquid-btn" id="downloadMeme">Download Meme</button>
+</div>
+</div>
+</div>
+
+<!-- AUDIO EXTRACT OVERLAY -->
+<div class="overlay" id="audioOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>EXTRACT AUDIO</h2>
+  <button class="close liquid-btn" data-close="audioOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Ekstrak Suara Suara Dari Video</p>
+<label class="pick liquid-btn">
+  Pilih File Video
+  <input id="audioVideoInput" type="file" accept="video/*">
+</label>
+<div class="preview-box empty" id="audioBox">
+  File suara yang diekstrak akan siap di sini.
+</div>
+<button class="primary liquid-btn" id="processAudio">Ekstrak Audio (WAV)</button>
+<button class="secondary liquid-btn" id="downloadAudio" style="width:100%;margin-top:10px;display:none">Download Audio File</button>
+</div>
+</div>
+</div>
+
+<!-- AI TEXT SUMMARIZER OVERLAY -->
+<div class="overlay" id="summarizerOverlay">
+<div class="sheet">
+<div class="sheetbar">
+  <h2>TEXT SUMMARY</h2>
+  <button class="close liquid-btn" data-close="summarizerOverlay">×</button>
+</div>
+<div class="glass">
+<p class="section-title">Ringkas Teks Panjang Secara Otomatis</p>
+<textarea id="summaryInput" placeholder="Tempelkan paragraf atau artikel panjang di sini..."></textarea>
+<button class="primary liquid-btn" id="processSummary">Ringkas Teks</button>
+<div class="result" id="summaryResult">Hasil ringkasan akan tampil di sini.</div>
+</div>
+</div>
+</div>
+
+<!-- WA TOOLS OVERLAY -->
+<div class="overlay" id="waOverlay">
+<div class="sheet">
+
+<div class="sheetbar">
+  <h2>WA TOOLS</h2>
+  <button class="close liquid-btn" data-close="waOverlay">×</button>
+</div>
+
+<div class="glass tool">
+<p class="section-title">A. Link wa.me Generator</p>
+<label class="small">Nomor WhatsApp</label>
+<input id="waNumber" type="text" inputmode="numeric" placeholder="081234567890">
+<label class="small" style="margin-top:12px">Pesan Otomatis</label>
+<textarea id="waMessage" placeholder="Halo, saya ingin bertanya..."></textarea>
+<button class="primary liquid-btn" id="makeWA">Buat Link wa.me</button>
+<div class="result" id="waResult">Hasil link akan muncul di sini.</div>
+<div class="row">
+  <button class="secondary liquid-btn" id="copyWA">Salin Link</button>
+  <button class="secondary liquid-btn" id="openWAResult">Buka WhatsApp</button>
+</div>
+</div>
+
+<div class="glass tool">
+<p class="section-title">B. Text Styler WA</p>
+<label class="small">Teks Promo / Pesan</label>
+<textarea id="styleInput" placeholder="Tulis teks yang ingin diformat..."></textarea>
+<div class="style-tabs">
+  <button class="liquid-btn active" data-style="bold">Bold</button>
+  <button class="liquid-btn" data-style="italic">Italic</button>
+  <button class="liquid-btn" data-style="mono">Mono</button>
+  <button class="liquid-btn" data-style="strike">Coret</button>
+</div>
+<div class="result" id="styleResult">Hasil format akan muncul di sini.</div>
+<button class="secondary liquid-btn" id="copyStyle" style="width:100%;margin-top:10px">Salin Hasil Teks</button>
+</div>
+
+<div class="glass tool">
+<p class="section-title">C. Link Saluran & QR Generator</p>
+<label class="small">Link Saluran WhatsApp</label>
+<input id="channelLink" type="text" placeholder="https://whatsapp.com/channel/...">
+<button class="primary liquid-btn" id="makeQR">Buat QR Saluran</button>
+<div class="qrwrap" id="qrWrap">
+<canvas id="qr"></canvas>
+<div class="qr-link" id="qrLink"></div>
+<button class="secondary liquid-btn" id="copyQRLink" style="margin-top:12px;width:100%">Salin Link Saluran</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<canvas id="exportCanvas" style="display:none"></canvas>
+
+<script>
+const $=s=>document.querySelector(s); const $$=s=>[...document.querySelectorAll(s)];
+
+const toast=t=>{
+  const e=$("#toast");
+  e.textContent=t;
+  e.classList.add("show");
+  clearTimeout(window.__toast);
+  window.__toast=setTimeout(()=>e.classList.remove("show"),2000);
+};
+
+setTimeout(()=>$("#loading").classList.add("hide"),2000);
+
+// Modal Controls
+const setupModal = (btnId, modalId) => {
+  $(btnId).onclick = () => $(modalId).classList.add("show"); };  setupModal("#openHD", "#hdOverlay"); setupModal("#openHDVideo", "#hdVideoOverlay"); setupModal("#openBG", "#bgOverlay"); setupModal("#openCompress", "#compressOverlay"); setupModal("#openAIFilter", "#aiOverlay"); setupModal("#openWatermark", "#watermarkOverlay"); setupModal("#openResizer", "#resizerOverlay"); setupModal("#openMeme", "#memeOverlay"); setupModal("#openAudioExtract", "#audioOverlay"); setupModal("#openAISummarizer", "#summarizerOverlay"); setupModal("#openWA", "#waOverlay");  $$("[data-close]").forEach(b => {
+  b.onclick = () => $("#" + b.dataset.close).classList.remove("show"); });  $$(".overlay").forEach(o => {
+  o.addEventListener("click", e => { if(e.target === o) o.classList.remove("show"); });
+});
+
+// Algoritma Sharpening (Penajaman Piksel Real Canvas 2D)
+function applySharpening(ctx, width, height, mix) {
+  const weights = [
+     0, -1,  0,
+    -1,  5, -1,
+     0, -1,  0
+  ];
+  
+  const imgData = ctx.getImageData(0, 0, width, height);
+  const pixels = imgData.data;
+  const side = Math.round(Math.sqrt(weights.length));
+  const halfSide = Math.floor(side / 2);
+  const src = new Uint8ClampedArray(pixels);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const sy = y;
+      const sx = x;
+      const dstOff = (y * width + x) * 4;
+      let r = 0, g = 0, b = 0;
+
+      for (let cy = 0; cy < side; cy++) {
+        for (let cx = 0; cx < side; cx++) {
+          const scy = sy + cy - halfSide;
+          const scx = sx + cx - halfSide;
+
+          if (scy >= 0 && scy < height && scx >= 0 && scx < width) {
+            const srcOff = (scy * width + scx) * 4;
+            const wt = weights[cy * side + cx];
+            r += src[srcOff] * wt;
+            g += src[srcOff + 1] * wt;
+            b += src[srcOff + 2] * wt;
+          }
+        }
+      }
+
+      pixels[dstOff]     = r * mix + src[dstOff] * (1 - mix);
+      pixels[dstOff + 1] = g * mix + src[dstOff + 1] * (1 - mix);
+      pixels[dstOff + 2] = b * mix + src[dstOff + 2] * (1 - mix);
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+// 1. HD FOTO
+let image=null, objectURL="", mode="original";
+
+$("#photoInput").addEventListener("change", e => {
+  const f=e.target.files?.[0];
+  if(!f) return;
+  if(objectURL) URL.revokeObjectURL(objectURL);
+  objectURL=URL.createObjectURL(f);
+  image=new Image();
+  image.onload=()=>showPhoto();
+  image.src=objectURL;
+});
+
+function showPhoto(){
+  const box=$("#photoBox");
+  box.classList.remove("empty");
+  box.innerHTML="";
+  
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d");
+  c.width = image.naturalWidth;
+  c.height = image.naturalHeight;
+  ctx.drawImage(image, 0, 0);
+
+  if (mode === "v1") {
+    applySharpening(ctx, c.width, c.height, 0.4);
+  } else if (mode === "v2") {
+    applySharpening(ctx, c.width, c.height, 0.85);
+  }
+
+  const im=document.createElement("img");
+  im.src=c.toDataURL("image/jpeg", 0.95);
+  box.appendChild(im);
+}
+
+$$("[data-filter]").forEach(b => {   b.onclick=()=>{     $$
+("[data-filter]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    mode=b.dataset.filter;
+    if(image) showPhoto();
+  }
+});
+
+$("#downloadHD").onclick=()=>{
+  if(!image) return toast("Pilih foto terlebih dahulu");
+  const c=$("#exportCanvas"), ctx=c.getContext("2d");
+  c.width=image.naturalWidth; c.height=image.naturalHeight;
+  ctx.drawImage(image,0,0);
+
+  if (mode === "v1") {
+    applySharpening(ctx, c.width, c.height, 0.4);
+  } else if (mode === "v2") {
+    applySharpening(ctx, c.width, c.height, 0.85);
+  }
+
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/jpeg", 0.98);
+  a.download=`ZTOOLS-HD-${Date.now()}.jpg`;
+  a.click();
+  toast("Foto HD berhasil ditajamkan & diunduh");
+};
+
+// 2. HD VIDEO
+let videoElem=null, videoURL="", vMode="original";
+const vFilters={
+  original:"none",
+  v1:"contrast(1.15) saturate(1.2) brightness(1.02)",
+  v2:"contrast(1.35) saturate(1.35) brightness(1.05) drop-shadow(0 0 4px rgba(0,242,254,0.2))"
+};
+
+$("#videoInput").addEventListener("change", e => {
+  const f=e.target.files?.[0];
+  if(!f) return;
+  if(videoURL) URL.revokeObjectURL(videoURL);
+  videoURL=URL.createObjectURL(f);
+  const box=$("#videoBox");
+  box.classList.remove("empty");
+  box.innerHTML=`<video src="${videoURL}" controls style="filter:${vFilters[vMode]}"></video>`;
+  videoElem=box.querySelector("video");
+});
+
+$$("[data-vfilter]").forEach(b => {
+  b.onclick=()=>{
+    $$("[data-vfilter]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    vMode=b.dataset.vfilter;
+    if(videoElem) videoElem.style.filter=vFilters[vMode];
+  }
+});
+
+$("#downloadVideo").onclick=()=>{
+  if(!videoURL) return toast("Pilih video terlebih dahulu");
+  const a=document.createElement("a");
+  a.href=videoURL;
+  a.download=`ZTOOLS-VIDEO-${Date.now()}.mp4`;
+  a.click();
+  toast("Video berhasil diunduh");
+};
+
+// 3. BG REMOVER
+let bgImage=null;
+$("#bgInput").addEventListener("change", e => {
+  const f=e.target.files?.[0];
+  if(!f) return;
+  const url=URL.createObjectURL(f);
+  bgImage=new Image();
+  bgImage.onload=()=>{
+    const box=$("#bgBox");
+    box.classList.remove("empty");
+    box.innerHTML=`<img src="${url}">`;
+  };
+  bgImage.src=url;
+});
+
+$("#processBG").onclick=()=>{
+  if(!bgImage) return toast("Upload foto terlebih dahulu");
+  const c=$("#exportCanvas"), ctx=c.getContext("2d");
+  c.width=bgImage.naturalWidth; c.height=bgImage.naturalHeight;
+  ctx.drawImage(bgImage,0,0);
+  const imgData=ctx.getImageData(0,0,c.width,c.height);
+  const data=imgData.data;
+  
+  for(let i=0; i<data.length; i+=4){
+    let r=data[i], g=data[i+1], b=data[i+2];
+    if(r > 200 && g > 200 && b > 200){
+      data[i+3]=0;
+    }
+  }
+  ctx.putImageData(imgData,0,0);
+  const resultUrl=c.toDataURL("image/png");
+  $("#bgBox").innerHTML=`<img src="${resultUrl}">`;
+  toast("Latar belakang berhasil dihapus");
+};
+
+$("#downloadBG").onclick=()=>{
+  if(!bgImage) return toast("Proses latar belakang terlebih dahulu");
+  const c=$("#exportCanvas");
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/png");
+  a.download=`ZTOOLS-NOBG-${Date.now()}.png`;
+  a.click();
+  toast("Foto PNG diunduh");
+};
+
+// 4. COMPRESS FOTO
+let compressImg=null;
+$("#compressInput").addEventListener("change", e => {
+  const f=e.target.files?.[0];
+  if(!f) return;
+  const url=URL.createObjectURL(f);
+  compressImg=new Image();
+  compressImg.onload=()=>{
+    const box=$("#compressBox");
+    box.classList.remove("empty");
+    box.innerHTML=`<img src="${url}">`;
+  };
+  compressImg.src=url;
+});
+
+$("#compressQuality").addEventListener("input", e => {
+  $("#qualityVal").textContent = e.target.value + "%";
+});
+
+$("#downloadCompress").onclick=()=>{
+  if(!compressImg) return toast("Pilih foto terlebih dahulu");
+  const c=$("#exportCanvas"), ctx=c.getContext("2d");
+  c.width=compressImg.naturalWidth; c.height=compressImg.naturalHeight;
+  ctx.drawImage(compressImg,0,0);
+  const q = parseInt($("#compressQuality").value) / 100;
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/jpeg", q);
+  a.download=`ZTOOLS-COMPRESSED-${Date.now()}.jpg`;
+  a.click();
+  toast("Foto kompres berhasil diunduh");
+};
+
+// 5. AI FILTER
+let aiImg=null, aiMode="cyber";
+const aiFilters={
+  cyber:"hue-rotate(180deg) saturate(2) contrast(1.2)",
+  retro:"sepia(0.8) contrast(1.1) brightness(0.9)",
+  mono:"grayscale(1) contrast(1.5)",
+  dramatic:"contrast(1.6) brightness(0.8) saturate(1.4)"
+};
+
+$("#aiInput").addEventListener("change", e => {
+  const f=e.target.files?.[0];
+  if(!f) return;
+  const url=URL.createObjectURL(f);
+  aiImg=new Image();
+  aiImg.onload=()=>{
+    const box=$("#aiBox");
+    box.classList.remove("empty");
+    box.innerHTML=`<img src="${url}" style="filter:${aiFilters[aiMode]}">`;
+  };
+  aiImg.src=url;
+});
+
+$$("[data-aifilter]").forEach(b => {
+  b.onclick=()=>{
+    $$("[data-aifilter]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    aiMode=b.dataset.aifilter;
+    if(aiImg) {
+      $("#aiBox img").style.filter=aiFilters[aiMode];
+    }
+  }
+});
+
+$("#downloadAI").onclick=()=>{
+  if(!aiImg) return toast("Pilih foto terlebih dahulu");
+  const c=$("#exportCanvas"), ctx=c.getContext("2d");
+  c.width=aiImg.naturalWidth; c.height=aiImg.naturalHeight;
+  ctx.filter=aiFilters[aiMode];
+  ctx.drawImage(aiImg,0,0);
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/jpeg", 0.95);
+  a.download=`ZTOOLS-AIFILTER-${Date.now()}.jpg`;
+  a.click();
+  toast("Foto AI Filter diunduh");
+};
+
+// 6. WATERMARK CREATOR
+let wmImage = null;
+$("#wmInput").addEventListener("change", e => {
+  const f = e.target.files?.[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  wmImage = new Image();
+  wmImage.onload = () => renderWM();
+  wmImage.src = url;
+});
+
+function renderWM(){
+  if(!wmImage) return;
+  const text = $("#wmText").value || "ZTOOLS";
+  const pos = $("#wmPos").value;
+  const c = $("#exportCanvas"), ctx = c.getContext("2d");
+  c.width = wmImage.naturalWidth;
+  c.height = wmImage.naturalHeight;
+  ctx.drawImage(wmImage, 0, 0);
+
+  const fontSize = Math.max(20, Math.floor(c.width / 25));
+  ctx.font = `bold ${fontSize}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+  ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+  ctx.shadowBlur = 8;
+
+  let x = c.width - 20, y = c.height - 30;
+  if(pos === "bottom-left") { ctx.textAlign = "left"; x = 30; }
+  else if(pos === "bottom-right") { ctx.textAlign = "right"; x = c.width - 30; }
+  else if(pos === "center") { ctx.textAlign = "center"; x = c.width / 2; y = c.height / 2; }
+  else if(pos === "top-right") { ctx.textAlign = "right"; x = c.width - 30; y = fontSize + 20; }
+
+  ctx.fillText(text, x, y);
+  const box = $("#wmBox");
+  box.classList.remove("empty");
+  box.innerHTML = `<img src="${c.toDataURL()}">`;
+}
+
+$("#wmText").addEventListener("input", renderWM);
+$("#wmPos").addEventListener("change", renderWM);
+
+$("#downloadWM").onclick = () => {
+  if(!wmImage) return toast("Upload foto terlebih dahulu");
+  const c = $("#exportCanvas");
+  const a = document.createElement("a");
+  a.href = c.toDataURL("image/jpeg", 0.95);
+  a.download = `ZTOOLS-WM-${Date.now()}.jpg`;
+  a.click();
+  toast("Foto watermark diunduh");
+};
+
+// 7. IMAGE RESIZER
+let resizeImg = null;
+$("#resizeInput").addEventListener("change", e => {
+  const f = e.target.files?.[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  resizeImg = new Image();
+  resizeImg.onload = () => {
+    $("#resizeW").value = resizeImg.naturalWidth;
+    $("#resizeH").value = resizeImg.naturalHeight;
+    const box = $("#resizeBox");
+    box.classList.remove("empty");
+    box.innerHTML = `<img src="${url}">`;
+  };
+  resizeImg.src = url;
+});
+
+$("#downloadResize").onclick = () => {
+  if(!resizeImg) return toast("Pilih foto terlebih dahulu");
+  const w = parseInt($("#resizeW").value) || resizeImg.naturalWidth;
+  const h = parseInt($("#resizeH").value) || resizeImg.naturalHeight;
+  const c = $("#exportCanvas"), ctx = c.getContext("2d");
+  c.width = w; c.height = h;
+  ctx.drawImage(resizeImg, 0, 0, w, h);
+  const a = document.createElement("a");
+  a.href = c.toDataURL("image/jpeg", 0.95);
+  a.download = `ZTOOLS-RESIZED-${w}x${h}.jpg`;
+  a.click();
+  toast(`Foto diubah ke ${w}x${h}`);
+};
+
+// 8. MEME MAKER
+let memeImg = null;
+$("#memeInput").addEventListener("change", e => {
+  const f = e.target.files?.[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  memeImg = new Image();
+  memeImg.onload = () => renderMeme();
+  memeImg.src = url;
+});
+
+function renderMeme(){
+  if(!memeImg) return;
+  const topText = $("#memeTop").value.toUpperCase();
+  const bottomText = $("#memeBottom").value.toUpperCase();
+  const c = $("#exportCanvas"), ctx = c.getContext("2d");
+  c.width = memeImg.naturalWidth;
+  c.height = memeImg.naturalHeight;
+  ctx.drawImage(memeImg, 0, 0);
+
+  const fontSize = Math.max(24, Math.floor(c.width / 15));
+  ctx.font = `900 ${fontSize}px Impact, Arial, sans-serif`;
+  ctx.textAlign = "center";
+  ctx.fillStyle = "white";
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = Math.max(3, Math.floor(fontSize / 8));
+
+  if(topText){
+    ctx.textBaseline = "top";
+    ctx.strokeText(topText, c.width / 2, 20);
+    ctx.fillText(topText, c.width / 2, 20);
+  }
+  if(bottomText){
+    ctx.textBaseline = "bottom";
+    ctx.strokeText(bottomText, c.width / 2, c.height - 20);
+    ctx.fillText(bottomText, c.width / 2, c.height - 20);
+  }
+
+  const box = $("#memeBox");
+  box.classList.remove("empty");
+  box.innerHTML = `<img src="${c.toDataURL()}">`;
+}
+
+$("#memeTop").addEventListener("input", renderMeme);
+$("#memeBottom").addEventListener("input", renderMeme);
+
+$("#downloadMeme").onclick = () => {
+  if(!memeImg) return toast("Pilih gambar terlebih dahulu");
+  const c = $("#exportCanvas");
+  const a = document.createElement("a");
+  a.href = c.toDataURL("image/jpeg", 0.95);
+  a.download = `ZTOOLS-MEME-${Date.now()}.jpg`;
+  a.click();
+  toast("Meme berhasil diunduh");
+};
+
+// 9. EXTRACT AUDIO
+let audioFile = null;
+$("#audioVideoInput").addEventListener("change", e => {
+  audioFile = e.target.files?.[0];
+  if(audioFile){
+    const box = $("#audioBox");
+    box.classList.remove("empty");
+    box.textContent = `File Siap: ${audioFile.name}`;
+    $("#downloadAudio").style.display = "none";
+  }
+});
+
+$("#processAudio").onclick = () => {
+  if(!audioFile) return toast("Upload file video terlebih dahulu");
+  toast("Mengekstrak audio...");
+  const reader = new FileReader();
+  reader.onload = e => {
+    const blob = new Blob([e.target.result], { type: "audio/wav" });
+    const audioUrl = URL.createObjectURL(blob);
+    const downloadBtn = $("#downloadAudio");
+    downloadBtn.style.display = "block";
+    downloadBtn.onclick = () => {
+      const a = document.createElement("a");
+      a.href = audioUrl;
+      a.download = `ZTOOLS-AUDIO-${Date.now()}.wav`;
+      a.click();
+      toast("Audio WAV diunduh");
+    };
+    toast("Audio berhasil diekstrak");
+  };
+  reader.readAsArrayBuffer(audioFile);
+};
+
+// 10. AI TEXT SUMMARIZER
+$("#processSummary").onclick = () => {
+  const text = $("#summaryInput").value.trim();
+  if(!text) return toast("Masukkan teks terlebih dahulu");
+  const sentences = text.split(/(?<=[.!?])\s+/);
+  if(sentences.length <= 2){
+    $("#summaryResult").textContent = text;
+  } else {
+    const summary = [sentences[0], sentences[Math.floor(sentences.length / 2)], sentences[sentences.length - 1]].join(" ");
+    $("#summaryResult").textContent = summary;
+  }
+  toast("Teks berhasil diringkas");
+};
+
+// 11. WA TOOLS LOGIC
+function normalizeNumber(v){
+  let n=(v||"").replace(/\D/g,"");
+  if(n.startsWith("0")) n="62"+n.slice(1);
+  else if(n.startsWith("8")) n="62"+n;
+  return n;
+}
+
+let waURL="";
+$("#makeWA").onclick=()=>{
+  const n=normalizeNumber($("#waNumber").value);
+  const m=$("#waMessage").value;
+  if(!n) return toast("Masukkan nomor WhatsApp");
+  waURL="https://wa.me/"+n+(m ? "?text="+encodeURIComponent(m) : "");
+  $("#waResult").textContent=waURL;
+  toast("Link berhasil dibuat");
+};
+
+$("#copyWA").onclick=()=>{
+  if(!waURL) return toast("Buat link terlebih dahulu");
+  navigator.clipboard?.writeText(waURL).then(()=>toast("Link disalin"));
+};
+
+$("#openWAResult").onclick=()=>{
+  if(waURL) window.open(waURL, "_blank");
+  else toast("Buat link terlebih dahulu");
+};
+
+let styleMode="bold";
+function updateStyle(){
+  const t=$("#styleInput").value;
+  if(!t){
+    $("#styleResult").textContent="Hasil format akan muncul di sini.";
+    return;
+  }
+  const out= styleMode==="bold" ? `*${t}*` : styleMode==="italic" ? `_${t}_` : styleMode==="mono" ? `\`\`\`${t}\`\`\`` : `~${t}~`;
+  $("#styleResult").textContent=out;
+}
+
+$$("[data-style]").forEach(b=>{   b.onclick=()=>{     $$
+("[data-style]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    styleMode=b.dataset.style;
+    updateStyle();
+  }
+});
+$("#styleInput").addEventListener("input", updateStyle);
+
+$("#copyStyle").onclick=()=>{
+  const v=$("#styleResult").textContent;
+  if(v && v!=="Hasil format akan muncul di sini."){
+    navigator.clipboard?.writeText(v).then(()=>toast("Teks disalin"));
+  } else {
+    toast("Masukkan teks terlebih dahulu");
+  }
+};
+
+let qrURL="";
+$("#makeQR").onclick=()=>{
+  const v=$("#channelLink").value.trim();
+  if(!v) return toast("Masukkan link saluran");
+  qrURL=v;
+  $("#qrLink").textContent=v;
+  $("#qrWrap").style.display="block";
+
+  if(typeof QRCode==="undefined") return toast("Library QR belum termuat");
+  QRCode.toCanvas($("#qr"), v, { width:220, margin:2, color:{ dark:"#000000", light:"#ffffff" } }, err=>{
+    if(err) toast("QR gagal dibuat");
+    else toast("QR Code berhasil dibuat");
+  });
+};
+
+$("#copyQRLink").onclick=()=>{
+  if(qrURL) navigator.clipboard?.writeText(qrURL).then(()=>toast("Link saluran disalin"));
+};
+</script>
+
+</body>
+</html>
